@@ -1,0 +1,469 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="my-farm">
+  <template>
+    <style include="shared-styles">
+    .interrupt{
+        flex-grow: 0.5;
+    }
+    .collapse-content {
+      padding: 15px;
+      border: 1px solid #dedede;
+      border-radius: 5px;
+    }
+    .flexBox {
+        display : flex;
+        align-items: center;
+        padding: 10px 15px;
+        margin-top: 20px;
+        font-size: 18px;
+        flex-flow: row wrap;
+        align-content : space-between;
+    }
+    .flexBox > * {
+    margin: 20px 20px;
+    }
+    paper-material{
+        padding : 0px 20px;
+    }
+    .heading {
+      padding: 10px 15px;
+      margin-top: 20px;
+      background-color: #f3f3f3;
+      border: 1px solid #dedede;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+      :host {
+        display: block;
+      }
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+      .icon1{
+          opacity: 0.54;
+          width : 50px;
+          height : 50px;
+      }
+    .icon2{
+        opacity: 0.54;
+    }
+    paper-button.custom {
+        margin  : 10px;
+    --paper-button-ink-color: var(--paper-pink-a200);
+    /* These could also be individually defined for each of the
+      specific css classes, but we'll just do it once as an example */
+    --paper-button-flat-keyboard-focus: {
+      background-color: var(--paper-pink-a200);
+      color: white !important;
+    };
+    --paper-button-raised-keyboard-focus: {
+      background-color: var(--paper-pink-a200) !important;
+      color: white !important;
+    };
+  }
+  paper-button.green:hover {
+    background-color: var(--paper-green-200);
+  }
+  paper-button.red:hover {
+    background-color: var(--paper-red-200);
+  }
+  paper-button.green {
+    background-color: var(--paper-green-500);
+    color: white;
+  }
+  paper-button.red{
+    background-color: var(--paper-red-500);
+    color: white;
+  }
+  .head *{
+    display: inline-block;
+  }
+  #stream {
+              width: 320px;
+              height: 240px;
+              background: #ddd;
+              margin-top : 30px;
+              margin-bottom : 30px;
+            }
+  #splineChart {
+    margin-top : 30px;
+  }
+
+    </style>
+      
+      <h2 class="page-title">La ferme de {{farm.name}}</h2>
+      <div class="app">
+            <h1>Bluetooth Serial</h1>
+            <div id="mainPage">
+                <ul id="deviceList">
+                </ul>
+                <button id="refreshButton">Refresh</button>
+            </div>
+            <div id="detailPage">
+                <div id="resultDiv"></div>
+                <div>
+                    <input type="text" id="messageInput" value="Hello"/>
+                    <button id="sendButton">Send</button>
+                    <button id="sendb">blink</button>
+                    <button id="send1">1</button>
+                    <button id="send0">0</button>
+                </div>
+                <button id="disconnectButton">Disconnect</button>
+            </div>
+            <div id="statusDiv"></div>
+        </div>
+      <div>
+          <paper-button raised class="custom green">{{farm.client}}</paper-button>
+          <paper-button raised class$="{{getClass(farm.connected)}}">{{ getState(farm.connected) }}
+          <iron-icon id="connected" icon="icons:visibility" hidden$="{{!farm.connected}}"></iron-icon>
+              <iron-icon id="disconnected" icon="icons:visibility-off" hidden$="{{farm.connected}}"></iron-icon></paper-button>
+      </div>
+    <div class="flexBox">
+        <paper-material elevation="1" style="height:250px;">
+            <div id="gauge1" style="min-width:200px;width:300px;height: 200px;"></div>
+            <paper-progress id="progress1" hidden$="{{compute(hide)}}" style="width:300px;" indeterminate ></paper-progress>
+        </paper-material>
+        <paper-material elevation="1" style="height:250px;">
+            <div id="gauge2" style="min-width:200px;width:300px;height: 200px;"></div>
+            <paper-progress id="progress2" hidden$="{{compute(hide)}}"  style="width:300px;" indeterminate></paper-progress>
+        </paper-material>
+        <paper-material elevation="1">
+            <my-control url="{{controlUrl}}" on-interrupt="interrupter"></my-control>
+        </paper-material>  
+        <paper-material elevation="1">       
+            <highcharts-chart id="splineChart" type="spline" data="{{chart.series}}" 
+            title="Graphe de la température"
+            vs-time tooltipOptions="{{chart.tooltip}}"></highcharts-chart>
+        </paper-material>
+        <paper-material elevation="1" hidden$="{{hasCamera(farm.camera)}}">
+            <div class="head">
+              <h3>Caméra de surveillance</h3>
+              <iron-icon id="id_camera" icon="icons:camera-enhance"></iron-icon>
+            </div>
+            <img id="stream" src="../../loading.png" />
+        </paper-material>
+            <mqtt-connection auto
+                             id="connection" url="ws://test.mosquitto.org:8080"
+                             on-mqtt-message="hundle_message"
+                             options='{"will": {"topic": "/m3ftah/Brahim/camera", "payload": "false", "qos": 1,"retain": true}}'
+                             >
+           <template id="repeatT" is="dom-repeat" items="{{farms}}" as="item">
+                <mqtt-subscription topic="/m3ftah/{{item.name}}/state"></mqtt-subscription>
+           </template>                    
+                    <mqtt-subscription topic="/m3ftah/{{farm.name}}/stream"></mqtt-subscription>
+                    <mqtt-publish id="publish" topic="/m3ftah/{{farm.name}}/camera" payload="true" retained auto></mqtt-publish>
+            </mqtt-connection>
+
+        
+    </div>
+  </template>
+
+  <script>
+    (function() {
+        'use strict';
+        var myFarm,progress1;
+        polyapp.addEventListener('dom-change', function () {
+            var myColors = [
+              "#a9d70b",
+              "#f9c802",
+              "#ff0000"
+            ]
+            polyapp.g1 = new JustGage({
+                id: "gauge1",
+                value: 27,
+                min: 0,
+                max: 60,
+                title: "Température",
+                levelColors: ['#0F16F5', '#F50F0F', '#F50F0F'],
+                gaugeWidthScale: 0.2,
+                label: 'C°',
+                startAnimationTime: 2000,
+                startAnimationType: ">",
+                refreshAnimationTime: 1000,
+                refreshAnimationType: "bounce"
+            });
+            polyapp.g2 = new JustGage({
+                id: "gauge2",
+                value: 40,
+                min: 0,
+                max: 100,
+                title: "Humidité",
+                levelColors: ['#DEF50F', '#0FF513', '#0FF513', '#0FF513'],
+                gaugeWidthScale: 0.2,
+                label: '%',
+                startAnimationTime: 2000,
+                startAnimationType: ">",
+                refreshAnimationTime: 1000,
+                refreshAnimationType: "bounce"
+            });
+            
+            
+
+        });
+      Polymer({
+        is: 'my-farm',
+
+        properties: {
+            farm : {
+                type: Object,
+                value :polyapp.farms[polyapp.index]
+            },
+            farms: {
+                type: Object,
+                value: polyapp.farms
+            },
+          hide :{
+            type : Boolean,
+            value: false,
+          },
+          marche:{
+            type: String,
+            value: 2,
+            notify : true
+          },
+          arret:{
+            type: String,
+            value: 1,
+            notify : true
+          },
+          url:{
+            type : String
+          }
+        },
+        toggle : function() {
+        },
+        compute: function () {
+            return this.hide;
+        },
+        hasCamera: function () {
+            return !this.farm.camera;
+        },
+        predif: function () {
+            console.log('farm name');
+        },
+        getClass: function (connected) {
+            return (connected ? 'custom green' : 'custom red');
+        },
+        getState: function (connected) {
+            return connected ? 'connecté' : 'déconnecté';
+        },
+        interrupter: function (e, data) {
+            var connection = this.$.connection;
+            var str = '' + data.pin + (data.value == 1 ? 'on' : 'off');
+            app.send("" + data.value);
+            connection.publish("/m3ftah/" + myFarm.farm.name + "/led", str );
+        },
+        hundle_message : function(e,mqtt){
+            if (mqtt.topic.indexOf('stream') > -1) {
+                var str = String.fromCharCode.apply(null, mqtt.message);
+                //console.log(mqtt.topic);
+                myFarm.$.stream.src = "data:image/jpeg;base64," + str;
+            }else
+            if (mqtt.topic.indexOf(this.farm.name) > -1) {
+                var str = String.fromCharCode.apply(null, mqtt.message);
+                var myobj = JSON.parse(str);
+                //console.log(mqtt.topic + ' : ' + str);
+                this.addSpline(parseInt(myobj.temp));
+                myFarm.hide = false;
+                setTimeout(function () {
+                    myFarm.hide = true;
+                    polyapp.g1.refresh(parseInt(myobj.temp));
+                    polyapp.g2.refresh(parseInt(myobj.humid));
+                }, 1500)
+            }else{
+              //console.log(this.farm.name);
+              //console.log(mqtt.topic + ':' + mqtt.message);
+            }
+        },
+        addSpline : function(temp) {
+                var chart=this.$.splineChart,index="addData";
+                chart[index]((new Date()).getTime(),temp);
+        },
+        ready: function () {
+            this.chart = polyapp.chart;
+            myFarm = this;
+            progress1 = this.$.progress1;
+            //start the camera streaming
+            this.$.publish.payload="true";
+            this.$.publish.publish();
+        }
+      });
+    })();
+    var app = {
+    initialize: function() {
+        this.bindEvents();
+        this.showMainPage();
+    },
+    bindEvents: function() {
+
+        var TOUCH_START = 'touchstart';
+        if (window.navigator.msPointerEnabled) { // windows phone
+            TOUCH_START = 'MSPointerDown';
+        }
+        document.addEventListener('deviceready', this.onDeviceReady, false);
+        refreshButton.addEventListener(TOUCH_START, this.refreshDeviceList, false);
+        sendButton.addEventListener(TOUCH_START, this.sendData, false);
+        send1.addEventListener(TOUCH_START, function(){ app.send("1");}, false);
+        send0.addEventListener(TOUCH_START, function(){ app.send("0");}, false);
+        sendb.addEventListener(TOUCH_START, function(){ app.send("b");}, false);
+        disconnectButton.addEventListener(TOUCH_START, this.disconnect, false);
+        deviceList.addEventListener('touchstart', this.connect, false);
+    },
+    onDeviceReady: function() {
+        cordova.plugins.BluetoothStatus.initPlugin();   
+        cordova.plugins.BluetoothStatus.enableBT();
+        window.addEventListener('BluetoothStatus.enabled', function() {
+            console.log('Bluetooth has been enabled');
+        });
+        //bluetoothSerial.enable(app.refreshDeviceList(), app.onError);
+    },
+    refreshDeviceList: function() {
+        //setTimeout(function(){ bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError); },5000);
+        bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError);   
+        bluetoothSerial.list(app.onDeviceList, app.onError);        
+        //bluetoothSerial.setDeviceDiscoveredListener(app.onDeviceList);
+    },
+    onDeviceList: function(devices) {
+        var option;
+
+        // remove existing devices
+        deviceList.innerHTML = "";
+        app.setStatus("");
+        console.log("devices : " + devices.length + devices);
+
+        devices.forEach(function(device) {
+
+            var listItem = document.createElement('li'),
+                html = '<b>' + device.name + '</b><br/>' + device.id;
+
+            listItem.innerHTML = html;
+
+            if (cordova.platformId === 'windowsphone') {
+              // This is a temporary hack until I get the list tap working
+              var button = document.createElement('button');
+              button.innerHTML = "Connect";
+              button.addEventListener('click', app.connect, false);
+              button.dataset = {};
+              button.dataset.deviceId = device.id;
+              listItem.appendChild(button);
+            } else {
+              listItem.dataset.deviceId = device.id;
+            }
+            deviceList.appendChild(listItem);
+        });
+
+        if (devices.length === 0) {
+
+            option = document.createElement('option');
+            option.innerHTML = "No Bluetooth Devices";
+            deviceList.appendChild(option);
+
+            if (cordova.platformId === "ios") { // BLE
+                app.setStatus("No Bluetooth Peripherals Discovered.");
+            } else { // Android or Windows Phone
+                app.setStatus("Please Pair a Bluetooth Device.");
+            }
+
+        } else {
+            app.setStatus("Found " + devices.length + " device" + (devices.length === 1 ? "." : "s."));
+        }
+
+    },
+    connect: function(e) {
+        var onConnect = function() {
+                // subscribe for incoming data
+                bluetoothSerial.subscribe('\n', app.onData, app.onError);
+
+                resultDiv.innerHTML = "";
+                app.setStatus("Connected");
+                app.showDetailPage();
+            };
+
+        var deviceId = e.target.dataset.deviceId;
+        if (!deviceId) { // try the parent
+            deviceId = e.target.parentNode.dataset.deviceId;
+        }
+
+        bluetoothSerial.connect(deviceId, onConnect, app.onError);
+    },
+    onData: function(data) { // data received from Arduino
+        console.log(data);
+        resultDiv.innerHTML = resultDiv.innerHTML + "Received: " + data + "<br/>";
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+    },
+    send: function(data) {
+        var success = function() {
+            console.log("success");
+            resultDiv.innerHTML = resultDiv.innerHTML + "Sent: " + data + "<br/>";
+            resultDiv.scrollTop = resultDiv.scrollHeight;
+        };
+
+        var failure = function() {
+            alert("Failed writing data to Bluetooth peripheral");
+        };
+        //alert
+
+        //var data = messageInput.value;
+        bluetoothSerial.write(data, success, failure);
+    },
+    sendData: function(event) { // send data to Arduino
+
+        var success = function() {
+            console.log("success");
+            resultDiv.innerHTML = resultDiv.innerHTML + "Sent: " + messageInput.value + "<br/>";
+            resultDiv.scrollTop = resultDiv.scrollHeight;
+        };
+
+        var failure = function() {
+            alert("Failed writing data to Bluetooth peripheral");
+        };
+
+        var data = messageInput.value;
+        bluetoothSerial.write(data, success, failure);
+    },
+    disconnect: function(event) {
+        bluetoothSerial.disconnect(app.showMainPage, app.onError);
+    },
+    showMainPage: function() {
+        mainPage.style.display = "";
+        detailPage.style.display = "none";
+    },
+    showDetailPage: function() {
+        mainPage.style.display = "none";
+        detailPage.style.display = "";
+    },
+    setStatus: function(message) {
+        console.log(message);
+
+        window.clearTimeout(app.statusTimeout);
+        statusDiv.innerHTML = message;
+        statusDiv.className = 'fadein';
+
+        // automatically clear the status with a timer
+        app.statusTimeout = setTimeout(function () {
+            statusDiv.className = 'fadeout';
+        }, 5000);
+    },
+    onError: function(reason) {
+        alert("ERROR: " + reason); // real apps should use notification.alert
+    }
+};
+app.initialize();
+  </script>
+</dom-module>

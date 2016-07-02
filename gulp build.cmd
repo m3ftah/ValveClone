@@ -1,0 +1,1 @@
+gulp && powershell -c (New-Object Media.SoundPlayer "c:\door-close.wav").PlaySync();

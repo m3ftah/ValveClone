@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="dz.smartfarm.chat" version="2.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Chat</name>
+    <description>
+        A Sample Chat Application demonstrating the BluetoothSerial PhoneGap plugin.
+    </description>
+    <author email="dzsmartfarm@gmail.com" href="http://wwwdiriot.com">
+        Lakhdar Meftah
+    </author>
+    <preference name="orientation" value="default" />
+    <preference name="target-device" value="universal" />
+    <preference name="fullscreen" value="false" />
+    <preference name="KeyboardShrinksView" value="true" />
+    <preference name="DisallowOverscroll" value="true" />
+    <access origin="*" />
+    <preference name="xwalkVersion" value="19+" />
+    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+    <preference name="xwalkMode" value="embedded" />
+    <preference name="xwalkMultipleApk" value="true" />
+    <platform name="android">    
+    <icon src="www/logo.png" density="hdpi" />
+</platform>
+</widget>
