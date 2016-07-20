@@ -113,13 +113,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div id="mainPage">
                 <ul id="deviceList">
                 </ul>
-                <button id="refreshButton">Refresh</button>
+          <paper-button raised class="custom green" on-click="connect">Connect</paper-button>
             </div>
             <div id="detailPage">
                 <div id="resultDiv"></div>
                 <div>
                     <input type="text" id="messageInput" value="Hello"/>
-                    <button id="sendButton">Send</button>
+                    <paper-button raised class="custom green" on-click="send">Send</paper-button>
                     <button id="sendb">blink</button>
                     <button id="send1">1</button>
                     <button id="send0">0</button>
@@ -269,6 +269,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             app.send("" + data.value);
             connection.publish("/m3ftah/" + myFarm.farm.name + "/led", str );
         },
+        refresh: function (e) {
+          console.log("onclick refresh");
+          app.refreshDeviceList();
+        },
+        connect: function (e) {
+          console.log("onclick connect");
+          app.connect();
+        },
+        send: function (e) {
+          console.log("onclick send");
+          app.sendData();
+        },
         hundle_message : function(e,mqtt){
             if (mqtt.topic.indexOf('stream') > -1) {
                 var str = String.fromCharCode.apply(null, mqtt.message);
@@ -317,7 +329,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             TOUCH_START = 'MSPointerDown';
         }
         document.addEventListener('deviceready', this.onDeviceReady, false);
-        refreshButton.addEventListener(TOUCH_START, this.refreshDeviceList, false);
+        //refreshButton.addEventListener(TOUCH_START, this.refreshDeviceList, false);
         sendButton.addEventListener(TOUCH_START, this.sendData, false);
         send1.addEventListener(TOUCH_START, function(){ app.send("1");}, false);
         send0.addEventListener(TOUCH_START, function(){ app.send("0");}, false);
@@ -326,17 +338,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         deviceList.addEventListener('touchstart', this.connect, false);
     },
     onDeviceReady: function() {
+      if(localStorage != undefined)
+      {
+        console.log("Local Storage is supported");
+
+        //add
+        localStorage.setItem("Website", "SitePoint");
+
+        //update or overwrite
+        localStorage.setItem("Website", "SitePoint.com");
+
+        //remove
+        localStorage.removeItem("Website");
+
+        //remove all
+        localStorage.clear();
+      }
+      else
+      {
+        console.log("No support");
+      }
         cordova.plugins.BluetoothStatus.initPlugin();   
         cordova.plugins.BluetoothStatus.enableBT();
         window.addEventListener('BluetoothStatus.enabled', function() {
             console.log('Bluetooth has been enabled');
-        });
-        //bluetoothSerial.enable(app.refreshDeviceList(), app.onError);
+            app.connect();
+        });        
     },
     refreshDeviceList: function() {
         //setTimeout(function(){ bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError); },5000);
-        bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError);   
+        //bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError);   
         bluetoothSerial.list(app.onDeviceList, app.onError);        
+        console.log("refreshDeviceList");
         //bluetoothSerial.setDeviceDiscoveredListener(app.onDeviceList);
     },
     onDeviceList: function(devices) {
@@ -386,6 +419,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     },
     connect: function(e) {
+      console.log("connecting ...");
         var onConnect = function() {
                 // subscribe for incoming data
                 bluetoothSerial.subscribe('\n', app.onData, app.onError);
@@ -395,12 +429,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 app.showDetailPage();
             };
 
-        var deviceId = e.target.dataset.deviceId;
-        if (!deviceId) { // try the parent
-            deviceId = e.target.parentNode.dataset.deviceId;
-        }
-
-        bluetoothSerial.connect(deviceId, onConnect, app.onError);
+        bluetoothSerial.connect("20:15:10:26:46:49", onConnect, app.onError);
     },
     onData: function(data) { // data received from Arduino
         console.log(data);
@@ -409,7 +438,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
     send: function(data) {
         var success = function() {
-            console.log("success");
+            console.log("success: " + data);
             resultDiv.innerHTML = resultDiv.innerHTML + "Sent: " + data + "<br/>";
             resultDiv.scrollTop = resultDiv.scrollHeight;
         };
@@ -464,6 +493,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         alert("ERROR: " + reason); // real apps should use notification.alert
     }
 };
+  document.addEventListener("pause", onPause, false);
+
+  function onPause() {
+      // Handle the pause event
+
+  }
 app.initialize();
+
   </script>
 </dom-module>
