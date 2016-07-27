@@ -26,7 +26,6 @@ var glob = require('glob-all');
 var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
-var ensureFiles = require('./tasks/ensure-files.js');
 
 // var ghPages = require('gulp-gh-pages');
 
@@ -104,16 +103,6 @@ gulp.task('styles', function() {
   return styleTask('styles', ['**/*.css']);
 });
 
-// Ensure that we are not missing required files for the project
-// "dot" files are specifically tricky due to them being hidden on
-// some systems.
-gulp.task('ensureFiles', function(cb) {
-  var requiredFiles = ['.bowerrc'];
-
-  ensureFiles(requiredFiles.map(function(p) {
-    return path.join(__dirname, p);
-  }), cb);
-});
 
 // Optimize images
 gulp.task('images', function() {
@@ -272,7 +261,7 @@ gulp.task('serve:dist', ['default'], function() {
 gulp.task('default', ['clean'], function(cb) {
   // Uncomment 'cache-config' if you are going to use service workers.
   runSequence(
-    ['ensureFiles', 'copy', 'styles'],
+    ['copy', 'styles'],
     ['images', 'fonts', 'html'],
     'vulcanize', // 'cache-config',
     cb);

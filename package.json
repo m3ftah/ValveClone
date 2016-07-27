@@ -1,5 +1,5 @@
 {
-  "name": "azure",
+  "name": "valve",
   "version": "1.0.0",
   "description": "DzSmartFarm WebApp",
   "main": "server.js",
@@ -42,7 +42,7 @@
   },
   "scripts": {
     "test": "gulp test:local",
-    "start": "node server.js"
+    "start": "gulp"
   },
   "author": "Lakhdar Meftah",
   "license": "ISC"

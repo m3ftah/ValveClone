@@ -16,7 +16,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="generator" content="Polymer Starter Kit">
-  <title>SmartFarm Control</title>
+  <title>Valve</title>
 
   <!-- Place favicon.ico in the `app/` directory -->
 
@@ -121,7 +121,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="content">
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="admin">
-                <my-admin></my-admin>
+              <my-farm farm="{{farm}}"></my-farm>
             </section>
             <section data-route="farm">            
               <my-farm farm="{{farm}}"></my-farm>
