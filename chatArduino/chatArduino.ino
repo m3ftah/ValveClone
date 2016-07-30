@@ -23,18 +23,16 @@ void loop()
   {
     // Send any characters the Serial prints to the serial monitor
     String message = Serial.readString();
-    Serial.print(message);
+    Serial.println(message);
  
     //Serial.println(dataFromBt);
     if (message == "1") {
       Serial.print("led on");
       digitalWrite(led, HIGH);
-      Serial.print("1");
     }
     if (message == "0") {
       Serial.print("led off");
       digitalWrite(led, LOW);
-      Serial.print("0");
     }
     if (message == "b") {
       Serial.print("a");
