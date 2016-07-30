@@ -17,7 +17,7 @@
 /* global cordova, bluetoothSerial  */
 /* jshint browser: true , devel: true*/
 'use strict';
-angular.module('ui.bootstrap.demo', ['ui.bootstrap','ngAnimate','ngTouch']).controller('AccordionDemoCtrl', function ($scope) {
+var demoModule = angular.module('ui.bootstrap.demo', ['ui.bootstrap','ngAnimate','ngTouch']).controller('AccordionDemoCtrl', function ($scope) {
   $scope.oneAtATime = true;
 
   $scope.groups = [
@@ -43,10 +43,37 @@ angular.module('ui.bootstrap.demo', ['ui.bootstrap','ngAnimate','ngTouch']).cont
     isFirstOpen: true,
     isFirstDisabled: false
   };
-});
+})
 
-var app = {
+demoModule.controller('SerialCtrl', function ($scope) {
+  $scope.oneAtATime = true;
+  $scope.serial = "Serial : ";
+
+  $scope.groups = [
+    {
+      title: 'Dynamic Group Header - 1',
+      content: 'Dynamic Group Body - 1'
+    },
+    {
+      title: 'Dynamic Group Header - 2',
+      content: 'Dynamic Group Body - 2'
+    }
+  ];
+
+  $scope.items = ['Item 1', 'Item 2', 'Item 3'];
+
+  $scope.refresh = function() {
+    $scope.serial+=" me";
+  };
+
+  $scope.status = {
+    isCustomHeaderOpen: false,
+    isFirstOpen: true,
+    isFirstDisabled: false
+  };
+  $scope.app = {
     initialize: function() {
+      console.log("initialize")
         this.bindEvents();
         this.showMainPage();
     },
@@ -136,6 +163,7 @@ var app = {
     },
     onData: function(data) { // data received from Arduino
         console.log(data);
+        $scope.serial+=data;
         resultDiv.innerHTML = resultDiv.innerHTML + "Received: " + data + "<br/>";
         resultDiv.scrollTop = resultDiv.scrollHeight;
     },
@@ -180,4 +208,7 @@ var app = {
     onError: function(reason) {
         alert("ERROR: " + reason); // real apps should use notification.alert
     }
+
 };
+  $scope.app.initialize();
+});
