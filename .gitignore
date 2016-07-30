@@ -1,8 +1,7 @@
 plugins
 platforms
 node_modules
-app/bower_components
 .tmp
 .publish/
-www
+www/bower_components
 dist

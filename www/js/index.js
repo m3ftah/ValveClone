@@ -17,6 +17,34 @@
 /* global cordova, bluetoothSerial  */
 /* jshint browser: true , devel: true*/
 'use strict';
+angular.module('ui.bootstrap.demo', ['ui.bootstrap','ngAnimate','ngTouch']).controller('AccordionDemoCtrl', function ($scope) {
+  $scope.oneAtATime = true;
+
+  $scope.groups = [
+    {
+      title: 'Dynamic Group Header - 1',
+      content: 'Dynamic Group Body - 1'
+    },
+    {
+      title: 'Dynamic Group Header - 2',
+      content: 'Dynamic Group Body - 2'
+    }
+  ];
+
+  $scope.items = ['Item 1', 'Item 2', 'Item 3'];
+
+  $scope.addItem = function() {
+    var newItemNo = $scope.items.length + 1;
+    $scope.items.push('Item ' + newItemNo);
+  };
+
+  $scope.status = {
+    isCustomHeaderOpen: false,
+    isFirstOpen: true,
+    isFirstDisabled: false
+  };
+});
+
 var app = {
     initialize: function() {
         this.bindEvents();
@@ -31,9 +59,6 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         refreshButton.addEventListener(TOUCH_START, this.refreshDeviceList, false);
         sendButton.addEventListener(TOUCH_START, this.sendData, false);
-        send1.addEventListener(TOUCH_START, function(){ app.send("1");}, false);
-        send0.addEventListener(TOUCH_START, function(){ app.send("0");}, false);
-        sendb.addEventListener(TOUCH_START, function(){ app.send("b");}, false);
         disconnectButton.addEventListener(TOUCH_START, this.disconnect, false);
         deviceList.addEventListener('touchstart', this.connect, false);
     },
@@ -41,15 +66,11 @@ var app = {
         cordova.plugins.BluetoothStatus.initPlugin();   
         cordova.plugins.BluetoothStatus.enableBT();
         window.addEventListener('BluetoothStatus.enabled', function() {
-            console.log('Bluetooth has been enabled');
-        });
-        //bluetoothSerial.enable(app.refreshDeviceList(), app.onError);
+            app.refreshDeviceList();
+        });    
     },
     refreshDeviceList: function() {
-        //setTimeout(function(){ bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError); },5000);
-        bluetoothSerial.discoverUnpaired(app.onDeviceList, app.onError);   
-        bluetoothSerial.list(app.onDeviceList, app.onError);        
-        //bluetoothSerial.setDeviceDiscoveredListener(app.onDeviceList);
+        bluetoothSerial.list(app.onDeviceList, app.onError);
     },
     onDeviceList: function(devices) {
         var option;
@@ -57,7 +78,6 @@ var app = {
         // remove existing devices
         deviceList.innerHTML = "";
         app.setStatus("");
-        console.log("devices : " + devices.length + devices);
 
         devices.forEach(function(device) {
 
@@ -119,21 +139,6 @@ var app = {
         resultDiv.innerHTML = resultDiv.innerHTML + "Received: " + data + "<br/>";
         resultDiv.scrollTop = resultDiv.scrollHeight;
     },
-    send: function(data) {
-        var success = function() {
-            console.log("success");
-            resultDiv.innerHTML = resultDiv.innerHTML + "Sent: " + data + "<br/>";
-            resultDiv.scrollTop = resultDiv.scrollHeight;
-        };
-
-        var failure = function() {
-            alert("Failed writing data to Bluetooth peripheral");
-        };
-        //alert
-
-        //var data = messageInput.value;
-        bluetoothSerial.write(data, success, failure);
-    },
     sendData: function(event) { // send data to Arduino
 
         var success = function() {
@@ -176,4 +181,3 @@ var app = {
         alert("ERROR: " + reason); // real apps should use notification.alert
     }
 };
-app.initialize();
