@@ -5,70 +5,71 @@
         <meta name="format-detection" content="telephone=no" />
         <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1,  target-densitydpi=device-dpi" />
 
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
         <script src="./bower_components/angular/angular.js"></script>
         <script src="./bower_components/angular-touch/angular-touch.min.js"></script>
         <script src="./bower_components/angular-animate/angular-animate.min.js"></script>
         <script src="./bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 
         <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/BlController.js"></script>
         <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
 
         <title>Bluetooth Serial Chat</title>
     </head>
     <body ng-app="ui.bootstrap.demo">
-	    <div class="container-fluid">
-	  		<div class="row">
-	  			<div class="col-xs-12 col-md-8" ng-controller="AccordionDemoCtrl">
-				  <p>
-				    <button type="button" class="btn btn-default btn-sm" ng-click="status.open = !status.open">Toggle last panel</button>
-				    <button type="button" class="btn btn-default btn-sm" ng-click="status.isFirstDisabled = ! status.isFirstDisabled">Enable / Disable first panel</button>
-				  </p>
+     <div class="container-fluid" ng-controller="AccordionDemoCtrl">
+     <div class="row">
+   	</div>
+   <h1 class="alert alert-info text-center">السقي بالتقطير 1</h1>
+   <div >
+    <table class="table table-hover table-condensed text-center table-striped" >
+      <thead>
+       <tr >
+         <th class="text-center">ﺭﻗﻢ</th>
+         <th class="text-center">ﺗﻔﻌﻴﻞ</th>
+         <th class="text-center">اﻟﻮﻗﺖ</th> 
+         <th class="text-center">ﻋﻤﻠﻴﺎﺕ</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr ng-repeat="item in items">
+         <td>{{$index + 1}}</td>
+         <td>
+          <div class="checkbox">
+        <label>
+         <input type="checkbox" id="blankCheckbox" value="option1" ng-checked="items[$index].activated">
+        </label>
+       </div>
+      </td> 
+         <td >
+			<select class="form-control" ng-model="options[items[$index].time]" ng-options = "opt.name for opt in options">
+			</select>
+         </td>
+         <td> 
+         <div class="btn-group"><button class="btn btn-info btn-md" ng-click="isCollapsed2 = !isCollapsed2">بيفو</button><button class="btn btn-warning btn-md" ng-click="isCollapsed = !isCollapsed">يدوي</button></div> 
+      <div uib-collapse="isCollapsed">
+       <select class="form-control" ng-model="options[items[$index].manuel]" ng-options = "opt.name for opt in options">
+		</select>
+      </div>
+      <div uib-collapse="isCollapsed2">
+       <select class="form-control" ng-model="pivots[items[$index].pivot]" ng-options = "opt.name for opt in pivots">
+      </div>
+         </td> 
+       </tr>
+      </tbody>
+    </table>
+   </div>
+   
+  </div>
 
-				  <div class="checkbox">
-				    <label>
-				      <input type="checkbox" ng-model="oneAtATime">
-				      Open only one at a time
-				    </label>
-				  </div>
-				  <uib-accordion close-others="oneAtATime">
-				    <div uib-accordion-group class="panel-success" heading="Static Header, initially expanded" is-open="status.isFirstOpen" is-disabled="status.isFirstDisabled">
-				      This content is straight in the template.
-				    </div>
-				    <div uib-accordion-group class="panel-default" heading="{{group.title}}" ng-repeat="group in groups">
-				      {{group.content}}
-				    </div>
-				    <div uib-accordion-group class="panel-default" heading="Dynamic Body Content">
-				      <p>The body of the uib-accordion group grows to fit the contents</p>
-				      <button type="button" class="btn btn-default btn-sm" ng-click="addItem()">Add Item</button>
-				      <div ng-repeat="item in items">{{item}}</div>
-				    </div>
-				    
-				    <div uib-accordion-group class="panel-danger" heading="Delete account">
-				      <p>Please, to delete your account, click the button below</p>
-				      <button class="btn btn-danger">Delete</button>
-				    </div>
-				    <div uib-accordion-group class="panel-default" is-open="status.open">
-				      <uib-accordion-heading>
-				        I can have markup, too! <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-				      </uib-accordion-heading>
-				      This is just some content to illustrate fancy headings.
-				    </div>
-				  </uib-accordion>
-				</div>
-				<div class="col-xs-12 col-md-8"   >
-				<p class="bg-primary">...</p>
-				</div>
-			</div>
-		</div>
-
-        <div class="app" ng-controller="SerialCtrl">
+        <div class="app" ng-controller="BlController">
         <p class="bg-primary">{{serial}}</p>
-            <h1>Bluetooth Serial Chat</h1>
-            <div id="mainPage">
+            <h1 class="text-center">Valve</h1>
+            <div id="mainPage" class="text-center">
                 <ul id="deviceList">
                 </ul>
-                <button id="refreshButton" ng-click="refresh()">Regggfresh</button>
+                <button id="refreshButton" ng-click="refresh()" class="btn btn-success">Refresh</button>
             </div>
             <div id="detailPage">
                 <div id="resultDiv"></div>
