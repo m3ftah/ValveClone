@@ -18,11 +18,9 @@
 /* jshint browser: true , devel: true*/
 'use strict';
 var demoModule = angular.module('ui.bootstrap.demo', ['ui.bootstrap','ngAnimate','ngTouch']).controller('AccordionDemoCtrl', function ($scope,$log) {
-  $scope.mytime = new Date();
+
   $scope.isCollapsed = true;
   $scope.isCollapsed2 = true;
-  $scope.hstep = 1;
-  $scope.mstep = 15;
 
   $scope.options = [
   {name : "نصف ساعة"},
@@ -41,47 +39,13 @@ var demoModule = angular.module('ui.bootstrap.demo', ['ui.bootstrap','ngAnimate'
   {name : "4"}
   ];
 
-
   $scope.items = [
-  {time: 1, pivot : 0, manuel : 0,activated : 1},
-  {time: 3, pivot : 0, manuel : 0,activated : 1},
-  {time: 4, pivot : 1, manuel : 0,activated : 1},
-  {time: 4, pivot : 2, manuel : 1,activated : 0},
-  ];
-
-  $scope.myOpt= $scope.options[2];
-
-
-  $scope.update = function() {
-    var d = new Date();
-    d.setHours( 14 );
-    d.setMinutes( 0 );
-    $scope.mytime = d;
-  };
-
-  $scope.oneAtATime = true;
-
-  $scope.groups = [
-    {
-      title: 'Dynamic Group Header - 1',
-      content: 'Dynamic Group Body - 1'
-    },
-    {
-      title: 'Dynamic Group Header - 2',
-      content: 'Dynamic Group Body - 2'
-    }
+  {time: 1, pivot : 0, manuel : 0,state: 0,activated : 1},
+  {time: 3, pivot : 0, manuel : 0,state: 1,activated : 1},
+  {time: 4, pivot : 1, manuel : 0,state: 0,activated : 1},
+  {time: 4, pivot : 2, manuel : 1,state: 0,activated : 0},
   ];
 
 
-  $scope.addItem = function() {
-    var newItemNo = $scope.items.length + 1;
-    $scope.items.push('Item ' + newItemNo);
-  };
-
-  $scope.status = {
-    isCustomHeaderOpen: false,
-    isFirstOpen: true,
-    isFirstDisabled: false
-  };
 })
 

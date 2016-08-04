@@ -33,7 +33,7 @@
        </tr>
       </thead>
       <tbody>
-       <tr ng-repeat="item in items">
+       <tr ng-repeat="item in items" ng-class="{'info':items[$index].state}">
          <td>{{$index + 1}}</td>
          <td>
           <div class="checkbox">
