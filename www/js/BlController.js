@@ -1,6 +1,5 @@
-demoModule.controller('BlController', function ($scope) {
-  $scope.oneAtATime = true;
-  $scope.serial = "Serial : ";
+demoModule.controller('BlController', function ($scope, Fact) {
+  $scope.fact = Fact;
 
   $scope.groups = [
     {
@@ -16,7 +15,8 @@ demoModule.controller('BlController', function ($scope) {
   $scope.items = ['Item 1', 'Item 2', 'Item 3'];
 
   $scope.refresh = function() {
-    $scope.serial+=" me";
+    $scope.fact.Field+=" me";
+    console.log($scope.serial);
   };
 
   $scope.status = {
@@ -116,26 +116,26 @@ demoModule.controller('BlController', function ($scope) {
     },
     onData: function(data) { // data received from Arduino
         console.log("onData : "+data);
-        console.log($scope.serial);
-        console.log($scope);
-        $scope.serial+=data;
+        $scope.fact.Field+= data;
         $scope.$apply();
-        resultDiv.innerHTML = resultDiv.innerHTML + "Received: " + data + "<br/>";
-        resultDiv.scrollTop = resultDiv.scrollHeight;
+        /*resultDiv.innerHTML = resultDiv.innerHTML + "Received: " + data + "<br/>";
+        resultDiv.scrollTop = resultDiv.scrollHeight;*/
     },
-    sendData: function(event) { // send data to Arduino
+    sendData: function(data) { // send data to Arduino
 
         var success = function() {
             console.log("success");
-            resultDiv.innerHTML = resultDiv.innerHTML + "Sent: " + messageInput.value + "<br/>";
-            resultDiv.scrollTop = resultDiv.scrollHeight;
+            $scope.fact.Field += "sent : " + data +"\n";
+            preScroll.scrollTop = preScroll.scrollHeight;
+            /*resultDiv.innerHTML = resultDiv.innerHTML + "Sent: " + messageInput.value + "<br/>";
+            resultDiv.scrollTop = resultDiv.scrollHeight;*/
         };
 
         var failure = function() {
             alert("Failed writing data to Bluetooth peripheral");
         };
-
-        var data = messageInput.value;
+        console.log("sending : " + data);
+        //var data = messageInput.value;
         bluetoothSerial.write(data, success, failure);
     },
     disconnect: function(event) {
@@ -167,4 +167,6 @@ demoModule.controller('BlController', function ($scope) {
 
 };
   $scope.app.initialize();
+
+  $scope.fact.sendData = $scope.app.sendData;
 });

@@ -19,68 +19,117 @@
     </head>
     <body ng-app="ui.bootstrap.demo">
      <div class="container-fluid" ng-controller="AccordionDemoCtrl">
-     <div class="row">
-   	</div>
    <h1 class="alert alert-info text-center">السقي بالتقطير 1</h1>
-   <div >
+   <uib-tabset active="activeJustified" >
+    <uib-tab index="0" heading="الفانات">
+      <uib-tab-heading>
+        <i class="glyphicon glyphicon-list"></i> الفانات
+      </uib-tab-heading>
+
+      <form class="form-inline">
+    <button type="button" class="btn btn-warning" aria-label="Left Align" ng-click="pause()">
+      <span class="glyphicon glyphicon-pause" aria-hidden="true"></span> توقيف مؤقت
+    </button>
+  </form>
+  <hr>    
     <table class="table table-hover table-condensed text-center table-striped" >
       <thead>
        <tr >
-         <th class="text-center">ﺭﻗﻢ</th>
-         <th class="text-center">ﺗﻔﻌﻴﻞ</th>
-         <th class="text-center">اﻟﻮﻗﺖ</th> 
          <th class="text-center">ﻋﻤﻠﻴﺎﺕ</th>
+         <th class="text-center">اﻟﻮﻗﺖ</th> 
+         <th class="text-center">ﺗﻔﻌﻴﻞ</th>
+         <th class="text-center">ﺭﻗﻢ</th>
        </tr>
       </thead>
       <tbody>
        <tr ng-repeat="item in items" ng-class="{'info':items[$index].state}">
-         <td>{{$index + 1}}</td>
+        <td> 
+          <div class="btn-group">
+            <button class="btn btn-info btn-md" ng-click="isCollapsed2 = !isCollapsed2">بيفو</button>
+            <button class="btn btn-warning btn-md" ng-click="isCollapsed = !isCollapsed">يدوي</button>
+          </div> 
+          <div uib-collapse="isCollapsed">
+            <select class="form-control" ng-model="options[items[$index].manuel]" ng-options = "opt.name for opt in options">
+            </select>
+          </div>
+          <div uib-collapse="isCollapsed2">
+            <select class="form-control" ng-model="pivots[items[$index].pivot]" ng-options = "opt.name for opt in pivots">
+          </div>
+        </td>
+        <td >
+          <select class="form-control" ng-model="options[items[$index].time]" ng-options = "opt.name for opt in options">
+          </select>
+         </td>
          <td>
           <div class="checkbox">
-        <label>
-         <input type="checkbox" id="blankCheckbox" value="option1" ng-checked="items[$index].activated">
-        </label>
-       </div>
-      </td> 
-         <td >
-			<select class="form-control" ng-model="options[items[$index].time]" ng-options = "opt.name for opt in options">
-			</select>
+            <label>
+              <input type="checkbox" id="blankCheckbox" value="option1" ng-checked="items[$index].activated">
+            </label>
+         </div>
+        </td> 
+         <td>
+            {{$index + 1}}
          </td>
-         <td> 
-         <div class="btn-group"><button class="btn btn-info btn-md" ng-click="isCollapsed2 = !isCollapsed2">بيفو</button><button class="btn btn-warning btn-md" ng-click="isCollapsed = !isCollapsed">يدوي</button></div> 
-      <div uib-collapse="isCollapsed">
-       <select class="form-control" ng-model="options[items[$index].manuel]" ng-options = "opt.name for opt in options">
-		</select>
-      </div>
-      <div uib-collapse="isCollapsed2">
-       <select class="form-control" ng-model="pivots[items[$index].pivot]" ng-options = "opt.name for opt in pivots">
-      </div>
-         </td> 
        </tr>
       </tbody>
     </table>
-   </div>
-   
+    
+    </uib-tab>
+    <uib-tab index="1" heading="الشاشة">
+      <uib-tab-heading>
+          <i class="glyphicon glyphicon-chevron-right"></i> الشاشة
+      </uib-tab-heading>
+        <div class="alert alert-success">
+    <pre class="lead" id="preScroll" style="min-height: 300px; max-height: 300px;height:300px;" >{{fact.Field}}</pre>
+      <div class="row">
+        <div class="col-xs-10 col-sm-11 ">
+          <input type="text" class="form-control" ng-model="fact.data" placeholder="Serial Console"/>
+        </div>
+          <button type="button" class="btn btn-danger" ng-click="send()">
+            <span class="glyphicon glyphicon-send " aria-hidden="true"></span>
+          </button>
+      </div>
+        
+    </div>
+    </uib-tab> 
+    <uib-tab index="2" heading="بلوتوث">
+      <uib-tab-heading>
+        <i class="glyphicon glyphicon-link"></i> بلوتوث
+      </uib-tab-heading>
+      <div class="app" ng-controller="BlController">
+      <h1 class="text-center">Valve</h1>
+      <div id="mainPage" class="text-center">
+          <ul id="deviceList">
+          </ul>
+          <button id="refreshButton" ng-click="refresh()" class="btn btn-success">Refresh</button>
+      </div>
+      <div id="detailPage">
+          <div id="resultDiv"></div>
+          <div>
+              <input type="text" id="messageInput" value="Hello"/>
+              <button id="sendButton" >Send</button>
+          </div>
+          <button id="disconnectButton">Disconnect</button>
+      </div>
+      <div id="statusDiv"></div>
+      </div>
+    </uib-tab>
+    <uib-tab index="3" heading="">
+    <uib-tab-heading>
+          <i class="glyphicon glyphicon-cog"></i>
+      </uib-tab-heading>
+        <div class="input-group">
+            <select class="form-control" ng-model="valveNum" ng-options = "opt.name for opt in valves">
+            </select>
+          <div class="input-group-addon">عدد الفانات</div>
+        </div>
+    </uib-tab>
+
+  </uib-tabset>
+  
   </div>
 
-        <div class="app" ng-controller="BlController">
-        <p class="bg-primary">{{serial}}</p>
-            <h1 class="text-center">Valve</h1>
-            <div id="mainPage" class="text-center">
-                <ul id="deviceList">
-                </ul>
-                <button id="refreshButton" ng-click="refresh()" class="btn btn-success">Refresh</button>
-            </div>
-            <div id="detailPage">
-                <div id="resultDiv"></div>
-                <div>
-                    <input type="text" id="messageInput" value="Hello"/>
-                    <button id="sendButton" >Send</button>
-                </div>
-                <button id="disconnectButton">Disconnect</button>
-            </div>
-            <div id="statusDiv"></div>
-        </div>
+  
 
         
         <script type="text/javascript" src="cordova.js"></script>
