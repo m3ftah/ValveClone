@@ -9,7 +9,7 @@
 #endif
 #include "Utils.h"
 
-int version,versionR;
+
 Info info;
 
 unsigned long toLong(String str){
@@ -20,6 +20,7 @@ unsigned long toLong(String str){
 }
 
 void checkUpdate(){
+ int version = 4,versionR =2;
  delay(10);
  eeprom_read_block(&versionR, (uint16_t*)0, sizeof(versionR));
  delay(10);

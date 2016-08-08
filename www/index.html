@@ -27,52 +27,79 @@
       </uib-tab-heading>
 
       <form class="form-inline">
-    <button type="button" class="btn btn-warning" aria-label="Left Align" ng-click="pause()">
-      <span class="glyphicon glyphicon-pause" aria-hidden="true"></span> توقيف مؤقت
-    </button>
-  </form>
-  <hr>    
-    <table class="table table-hover table-condensed text-center table-striped" >
-      <thead>
-       <tr >
-         <th class="text-center">ﻋﻤﻠﻴﺎﺕ</th>
-         <th class="text-center">اﻟﻮﻗﺖ</th> 
-         <th class="text-center">ﺗﻔﻌﻴﻞ</th>
-         <th class="text-center">ﺭﻗﻢ</th>
-       </tr>
-      </thead>
-      <tbody>
-       <tr ng-repeat="item in items" ng-class="{'info':items[$index].state}">
-        <td> 
-          <div class="btn-group">
-            <button class="btn btn-info btn-md" ng-click="isCollapsed2 = !isCollapsed2">بيفو</button>
-            <button class="btn btn-warning btn-md" ng-click="isCollapsed = !isCollapsed">يدوي</button>
-          </div> 
-          <div uib-collapse="isCollapsed">
-            <select class="form-control" ng-model="options[items[$index].manuel]" ng-options = "opt.name for opt in options">
+        <button type="button" class="btn" ng-class="{'btn-warning':!pause,'btn-danger':pause}" aria-label="Left Align" ng-click="sendPause()">
+          <span class="glyphicon glyphicon-pause" aria-hidden="true"></span> توقيف مؤقت
+        </button>
+        <button type="button" class="btn btn-info" aria-label="Left Align" ng-click="refresh()">
+          <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> تحديث
+        </button>
+        <button type="button" class="btn" ng-class="{'btn-success':!test,'btn-danger':test}" aria-label="Left Align" ng-click="sendTest()">
+          <span class="glyphicon glyphicon-sunglasses" aria-hidden="true"></span> تجريب
+        </button>
+      </form>
+      <table class="table table-hover table-condensed text-center table-striped" >
+        <thead>
+         <tr >
+           <th class="text-center">ﻋﻤﻠﻴﺎﺕ</th>
+           <th class="text-center">اﻟﻮﻗﺖ</th> 
+           <th class="text-center">ﺗﻔﻌﻴﻞ</th>
+           <th class="text-center">ﺭﻗﻢ</th>
+         </tr>
+        </thead>
+        <tbody>
+         <tr ng-repeat="item in items| limitTo:valveNum.index" ng-class="{'info':items[$index].state}">
+          <td> 
+            <div class="btn-group">
+            <button type="button" class="btn btn-info btn-sm" aria-label="Left Align" ng-click="isCollapsed3 = !isCollapsed3">
+              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> تعديل
+            </button>
+            </div>
+            <div uib-collapse="isCollapsed3">
+              <form class="form-horizontal" >
+                <div class="form-group">
+                  <label class="col-xs-2 control-label">يدوي</label>
+                  <div class="col-xs-9">
+                    <select class="form-control" ng-model="items[$index].manual" ng-change="sendManual($index,items[$index].manual)" ng-options = "opt.name for opt in options" >
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-xs-2 control-label">الدواء</label>
+                  <div class="col-xs-9">
+                    <select class="form-control" ng-model="items[$index].engrais" ng-change="sendEngrais($index,items[$index].engrais)" ng-options = "opt.name for opt in engrais" >
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-xs-2 control-label">بيفو</label>
+                  <div class="col-xs-9">
+                    <select class="form-control" ng-model="items[$index].pivot" ng-change="sendPivot($index,items[$index].pivot)" ng-options = "opt.name for opt in pivots">
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="col-xs-2 control-label">فانة</label>
+                  <div class="col-xs-9">
+                    <select class="form-control" ng-model="items[$index].valve" ng-change="sendValveTurn($index,items[$index].valve)" ng-options = "opt.name for opt in valveTurns">
+                    </select>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </td>
+          <td >
+            <select class="form-control" ng-model="items[$index].time" ng-change="sendValveTime($index,items[$index].time)" ng-options = "opt.name for opt in options">
             </select>
-          </div>
-          <div uib-collapse="isCollapsed2">
-            <select class="form-control" ng-model="pivots[items[$index].pivot]" ng-options = "opt.name for opt in pivots">
-          </div>
-        </td>
-        <td >
-          <select class="form-control" ng-model="options[items[$index].time]" ng-options = "opt.name for opt in options">
-          </select>
-         </td>
-         <td>
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" id="blankCheckbox" value="option1" ng-checked="items[$index].activated">
-            </label>
-         </div>
-        </td> 
-         <td>
-            {{$index + 1}}
-         </td>
-       </tr>
-      </tbody>
-    </table>
+           </td>
+           <td>
+                <input type="checkbox" id="blankCheckbox" value="option1" ng-model="items[$index].activated" ng-change="sendValveActive($index,items[$index].activated)" ng-true-value="1" ng-false-value="0">
+          </td> 
+           <td>
+              {{$index + 1}}
+           </td>
+         </tr>
+        </tbody>
+      </table>
     
     </uib-tab>
     <uib-tab index="1" heading="الشاشة">
@@ -83,7 +110,7 @@
     <pre class="lead" id="preScroll" style="min-height: 300px; max-height: 300px;height:300px;" >{{fact.Field}}</pre>
       <div class="row">
         <div class="col-xs-10 col-sm-11 ">
-          <input type="text" class="form-control" ng-model="fact.data" placeholder="Serial Console"/>
+          <input type="text" class="form-control" ng-model="fact.data" placeholder="Serial Console" ng-keyup="$event.keyCode == 13 && send()"/>
         </div>
           <button type="button" class="btn btn-danger" ng-click="send()">
             <span class="glyphicon glyphicon-send " aria-hidden="true"></span>
@@ -119,7 +146,7 @@
           <i class="glyphicon glyphicon-cog"></i>
       </uib-tab-heading>
         <div class="input-group">
-            <select class="form-control" ng-model="valveNum" ng-options = "opt.name for opt in valves">
+            <select class="form-control" ng-model="valveNum" ng-options = "opt as opt.name for opt in valves" ng-change="sendValveNum(valveNum)">
             </select>
           <div class="input-group-addon">عدد الفانات</div>
         </div>
@@ -129,9 +156,6 @@
   
   </div>
 
-  
-
-        
         <script type="text/javascript" src="cordova.js"></script>
     </body>
 </html>

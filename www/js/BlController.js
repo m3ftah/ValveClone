@@ -101,7 +101,6 @@ demoModule.controller('BlController', function ($scope, Fact) {
         var onConnect = function() {
                 // subscribe for incoming data
                 bluetoothSerial.subscribe('\n', $scope.app.onData, $scope.app.onError);
-
                 resultDiv.innerHTML = "";
                 $scope.app.setStatus("Connected");
                 $scope.app.showDetailPage();
@@ -116,8 +115,7 @@ demoModule.controller('BlController', function ($scope, Fact) {
     },
     onData: function(data) { // data received from Arduino
         console.log("onData : "+data);
-        $scope.fact.Field+= data;
-        $scope.$apply();
+        $scope.fact.onData(data);
         /*resultDiv.innerHTML = resultDiv.innerHTML + "Received: " + data + "<br/>";
         resultDiv.scrollTop = resultDiv.scrollHeight;*/
     },
