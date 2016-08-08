@@ -26,7 +26,6 @@
       <uib-tab-heading>
         <i class="glyphicon glyphicon-list"></i> الفانات
       </uib-tab-heading>
-
       <form class="form-inline">
         <button type="button" class="btn" ng-class="{'btn-warning':!pause,'btn-danger':pause}" aria-label="Left Align" ng-click="sendPause()">
           <span class="glyphicon glyphicon-pause" aria-hidden="true"></span> توقيف مؤقت
@@ -155,6 +154,56 @@
             <h3 class="alert alert-info text-center">{{status}}</h3>
         </div>
       </div>
+    </uib-tab>
+    <uib-tab index="3" heading="" >
+      <uib-tab-heading>
+        <i class="glyphicon glyphicon-info-sign"></i>
+      </uib-tab-heading>
+        <table class="table table-hover table-condensed text-center table-striped" >
+          <thead>
+           <tr >
+             <th class="text-center">المخرج</th> 
+             <th class="text-center">الوظيفة</th>
+           </tr>
+          </thead>
+          <tbody>
+           <tr><td> D2 </td><td> ترونصفو</td></tr>
+           <tr><td> D3 </td><td> جهة ترونصفو +</td></tr>
+           <tr><td> D4 </td><td> جهة ترونصفو -</td></tr>
+           <tr><td> D5 -&gt; D11 </td><td> الفانات</td></tr>
+           <tr><td> D13 </td><td> تجريب</td></tr>
+           <tr><td> A3 </td><td> مضخة الدواء</td></tr>
+           <tr><td> A4 -&gt; A7 </td><td> بيفوات</td></tr>
+          </tbody>
+        </table>
+        <hr>
+        <table class="table table-hover table-condensed text-center table-striped" >
+          <thead>
+           <tr >
+             <th class="text-center">الأمر</th> 
+             <th class="text-center">الوظيفة</th>
+           </tr>
+          </thead>
+          <tbody>
+           <tr><td> t6=120 </td><td> مدة السقي</td></tr>
+           <tr><td> v1=40 </td><td> فتح وغلق الصمام</td></tr>
+           <tr><td> p3=3 </td><td> رقم البيفو</td></tr>
+           <tr><td> a2=0 </td><td> تعطيل الصمام</td></tr>
+           <tr><td> m2=60 </td><td> مدة سقي مؤقت</td></tr>
+           <tr><td> g2=60 </td><td> مضخة الدواء</td></tr>
+           <tr><td> e1 </td><td> توقيف مؤقت</td></tr>
+           <tr><td> x2 </td><td> عدد الصمامات</td></tr>
+           <tr><td> r </td><td> الحصول على معلومات </td></tr>
+          </tbody>
+        </table>
+        <hr>
+        <img src="relais.jpg" class="img-responsive img-rounded" alt="schéma">
+        <hr>
+        <div class="text-center alert alert-info">
+        <h4>يرجى الإتصال على</h4>
+        <h4>06 62 24 77 77</h4>
+        <h4>dzsmartfarm@gmail.com</h4>
+        </div>
     </uib-tab>
   </uib-tabset>
   </div>
