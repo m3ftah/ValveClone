@@ -24,6 +24,7 @@ int TRANSFO = 2;
 int ENGRAIS = 17;
 int DIRECTION1 = 3;
 int DIRECTION2 = 4;
+int LED = 13;
 
 char cmdReg[22] = "^(%a+)(%d)=(%d+)";
 char turnReg[20] = "^v(%d)=(%d+)$";
@@ -45,7 +46,7 @@ void setup() {
 void loop() {
   if (Serial.available()) parse(Serial.readString());
   
-  for (int i=nextValve(info.turn);i<info.num;i=nextValve(info.turn)){   
+  for (int i=nextValve(info.turn);i<info.num;i=nextValve(info.turn)){
     if (info.vt[i].activated){
       if (!info.vt[i].state){
         turnValve(i,1);
@@ -73,8 +74,14 @@ void parse(String message){
     Serial.readString();
   }else if (message == "r") repport();
   else if (ms.Match(testReg)){
-    if (message.substring(1) == "1") test = 1;
-    else test=60;
+    if (message.substring(1) == "1"){
+      test = 1;
+      digitalWrite(LED,1);
+    }
+    else{
+      test=60;
+      digitalWrite(LED,0);
+    }
   }
   else if (ms.Match(numReg)){
     info.num = toLong(message.substring(1));
@@ -153,7 +160,7 @@ void repport(){
     Serial.print("a");Serial.print(i+1);Serial.print("="); Serial.print(info.vt[i].activated);
     Serial.print(",t");Serial.print(i+1);Serial.print("="); Serial.print(info.vt[i].time);
     Serial.print(",v");Serial.print(i+1);Serial.print("="); Serial.print(info.vt[i].turn);
-    if (info.vt[i].pivot != 0){Serial.print(",p=");Serial.print(getIndex(info.vt[i].pivot));}
+    Serial.print(",p");Serial.print(i+1);Serial.print("=");Serial.print(getIndex(info.vt[i].pivot));
     Serial.print(",s");Serial.print(i+1);Serial.print("=");
     if (info.vt[i].state) Serial.print("1"); else Serial.print("0");
     Serial.print(",g");Serial.print(i+1);Serial.print("="); Serial.print(info.vt[i].engrais); 

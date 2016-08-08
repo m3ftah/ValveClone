@@ -9,11 +9,11 @@ demoModule.factory('Fact', function(){
 demoModule.controller('AccordionDemoCtrl', function ($scope, $log, Fact) {
   $scope.fact = Fact;
   $scope.isCollapsed = true;
-  $scope.isCollapsed1 = true;
-  $scope.isCollapsed2 = true;
-  $scope.isCollapsed3 = true;
   $scope.test = false;
   $scope.pause = false;
+  $scope.fact.active = 2;
+  $scope.valveNum={};
+  $scope.fact.showBar = false;
 
 
   $scope.options = [
@@ -50,7 +50,7 @@ demoModule.controller('AccordionDemoCtrl', function ($scope, $log, Fact) {
   {name : "5 فانات",index:5},
   {name : "6 فانات",index:6},
   {name : "7 فانات",index:7}
-  ];  
+  ];    
   $scope.pivots = [
   {name : "لا يوجد"},
   {name : "1"},
@@ -58,7 +58,6 @@ demoModule.controller('AccordionDemoCtrl', function ($scope, $log, Fact) {
   {name : "3"},
   {name : "4"}
   ];
-  $scope.valveNum = $scope.valves[5];
 
   $scope.items = [
   {time: $scope.options[0],engrais: $scope.engrais[0], pivot : $scope.pivots[0], manual : $scope.options[2],state: 0,activated : 1,valve : $scope.valveTurns[0]},
@@ -106,6 +105,10 @@ demoModule.controller('AccordionDemoCtrl', function ($scope, $log, Fact) {
     $scope.tokenize($scope.fact.data);
     $scope.fact.sendData($scope.fact.data);
     $scope.fact.data="";
+  }
+  $scope.fact.sent =function(data){
+    $scope.fact.Field += "sent : " + data +"\n";
+    preScroll.scrollTop = preScroll.scrollHeight;
   }
   $scope.fact.onData = function(data){
     $scope.fact.Field+= data;
@@ -177,7 +180,6 @@ demoModule.controller('AccordionDemoCtrl', function ($scope, $log, Fact) {
   function loadItems(){
     if (localStorage.getItem("first") =="no"){
       $scope.items = JSON.parse(localStorage.getItem("Items"));
-      console.log($scope.items);
       $scope.test = JSON.parse(localStorage.getItem("test"));
       $scope.valveNum = JSON.parse(localStorage.getItem("num"));
       for (var i= 0;i<$scope.items.length;i++) {
