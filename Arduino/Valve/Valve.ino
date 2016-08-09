@@ -19,10 +19,10 @@ const String CMD_INVALID="E16";
 const byte pivots[] = {0,18,19,20,21};
 const byte pins[] = {5,6,7,8,9,10,11};
 
-int TRANSFO = 2;
+int TRANSFO = 4;
 int ENGRAIS = 17;
-int DIRECTION1 = 3;
-int DIRECTION2 = 4;
+int DIRECTION1 = 2;
+int DIRECTION2 = 3;
 int LED = 13;
 
 char cmdReg[22] = "^(%a+)(%d)=(%d+)";
@@ -56,6 +56,7 @@ void loop() {
         turnValve(i,1);
         setTurn(i,1);
       }
+      info.turn = i;
       turnOffOtherValves(i);
       if (info.vt[i].pivot != 0) digitalWrite(info.vt[i].pivot,0);
       Serial.print("t" + String(i+1) + "=" + String(info.vt[i].time) + "...");
@@ -101,7 +102,7 @@ void parse(String message){
     else if (ms.Match(activateReg)) info.vt[valve].activated = val;
     else if (ms.Match(manualReg)) manual(valve,val);
     writeInfo();
-  }else Serial.println(CMD_INVALID);
+  }else Serial.println(CMD_INVALID + ":" + message);
 }
 
 void turnOffOtherValves(int valve){
@@ -131,16 +132,15 @@ void turnValve(byte v, bool state){
     digitalWrite(DIRECTION2,1);
     digitalWrite(DIRECTION1,0);
     digitalWrite(TRANSFO,0);
-    digitalWrite(v+2,0);
+    digitalWrite(pins[v],0);
     delaySerial((unsigned long) info.vt[v].turn*1000);
-    digitalWrite(v+2,1);
+    digitalWrite(pins[v],1);
     digitalWrite(DIRECTION1,1);
     digitalWrite(TRANSFO,1);
   }
   Serial.println("s"+String(v+1) +"="+ String(state));
 }
 void setTurn(byte v,bool state){
-  if (state) info.turn = v;
   info.vt[v].state = state;
   writeInfo();
 }
@@ -159,6 +159,7 @@ byte nextValve(byte i){
 void repport(){
   Serial.print("x");Serial.println(info.num);
   Serial.print("e");Serial.println((test == 1? "1" : "0"));
+  //Serial.print("turn:"+ String(info.turn) + ", num: " + String(info.num));
   int i=0;
   for (i=0;i<info.num;i++){
     Serial.print("a");Serial.print(i+1);Serial.print("="); Serial.print(info.vt[i].activated);
