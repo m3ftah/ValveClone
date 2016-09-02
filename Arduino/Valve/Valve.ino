@@ -54,6 +54,7 @@ void loop() {
     if (info.vt[i].activated){
       if (!info.vt[i].state){
         turnValve(i,1);
+        info.turn = i;
         setTurn(i,1);
       }
       info.turn = i;

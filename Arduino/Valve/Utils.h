@@ -11,9 +11,9 @@
 
 
 struct Valve{
-  unsigned long time = 2;
+  unsigned long time = 1;
   unsigned long engrais = 0;
-  byte pivot = 0;bool state = 1;bool activated = 1;
+  byte pivot = 0;bool state = 0;bool activated = 1;
   int turn=5;
 };
 struct Info{

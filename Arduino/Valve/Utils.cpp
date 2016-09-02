@@ -20,7 +20,7 @@ unsigned long toLong(String str){
 }
 
 void checkUpdate(){
- int version = 4,versionR =2;
+ int version = 21434,versionR =5;
  delay(10);
  eeprom_read_block(&versionR, (uint16_t*)0, sizeof(versionR));
  delay(10);
